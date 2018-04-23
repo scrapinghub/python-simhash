@@ -218,7 +218,30 @@ static PyMethodDef functions[] = {
     {NULL, NULL, 0, NULL}
 };
 
-PyMODINIT_FUNC init_simhash(void)
-{
-    (void) Py_InitModule3("_simhash", functions, "simhashing for python");
-}
+#if PY_MAJOR_VERSION >= 3
+  static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "_simhash", /* m_name */
+    "simhashing for python",      /* m_doc */
+    -1,                  /* m_size */
+    functions,    /* m_methods */
+    NULL,                /* m_reload */
+    NULL,                /* m_traverse */
+    NULL,                /* m_clear */
+    NULL,                /* m_free */
+  };
+#endif
+
+#if PY_MAJOR_VERSION < 3
+    PyMODINIT_FUNC
+    init_simhash(void)
+    {
+        Py_InitModule3("_simhash", functions, "simhashing for python");
+    }
+#else
+    PyMODINIT_FUNC
+    PyInit__simhash(void)
+    {
+        return PyModule_Create(&moduledef);
+    }
+#endif
